@@ -76,7 +76,13 @@ module Shards
       end
 
       def prerelease?
-        segment.each_char.any?(&.ascii_letter?)
+        segment.each_char do |char|
+          case char
+          when .ascii_letter? then return true
+          when '+' then break
+          end
+        end
+        false
       end
 
       def inspect(io)
@@ -150,7 +156,13 @@ module Shards
     end
 
     def self.prerelease?(str)
-      str.each_char.any?(&.ascii_letter?)
+      str.each_char do |char|
+        case char
+        when .ascii_letter? then return true
+        when '+' then break
+        end
+      end
+      false
     end
 
     protected def self.without_prereleases(versions)

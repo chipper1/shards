@@ -23,7 +23,21 @@ module Shards
     end
 
     def version
-      fetch("version", "*")
+      version { "*" }
+    end
+
+    def version?
+      version { nil }
+    end
+
+    private def version
+      if version = self["version"]?
+        version
+      elsif self["tag"]? =~ VERSION_TAG
+        $1
+      else
+        yield
+      end
     end
 
     def refs
@@ -32,6 +46,20 @@ module Shards
 
     def path
       self["path"]?
+    end
+
+    def to_human_requirement
+      if version = version?
+        version
+      elsif branch = self["branch"]?
+        "branch #{branch}"
+      elsif tag = self["tag"]?
+        "tag #{tag}"
+      elsif commit = self["commit"]?
+        "commit #{commit}"
+      else
+        "*"
+      end
     end
 
     def inspect(io)
